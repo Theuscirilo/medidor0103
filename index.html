@@ -32,9 +32,12 @@
             });
 
             onValue(ref(database, `rageLevel/${user}`), (snapshot) => {
-                rageMeter.value = snapshot.val();
-                rageValue.textContent = `Nível: ${snapshot.val()}`;
-                updateHeart();
+                const value = snapshot.val();
+                if (value !== null && value !== undefined) {
+                    rageMeter.value = value;
+                    rageValue.textContent = `Nível: ${value}`;
+                    updateHeart();
+                }
             });
         }
 
