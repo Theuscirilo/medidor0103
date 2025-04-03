@@ -32,56 +32,70 @@
             });
 
             onValue(ref(database, `rageLevel/${user}`), (snapshot) => {
-                const value = snapshot.val();
-                if (value !== null && value !== undefined) {
-                    rageMeter.value = value;
-                    rageValue.textContent = `Nível: ${value}`;
-                    updateHeart();
+                let value = snapshot.val();
+                if (value === null || value === undefined) {
+                    value = 50;
+                    set(ref(database, `rageLevel/${user}`), value);
                 }
+                rageMeter.value = value;
+                rageValue.textContent = `Nível: ${value}`;
+                updateHeart();
             });
         }
 
         function updateHeart() {
-            const rageMatheus = parseInt(document.getElementById("rageMeterMatheus").value);
-            const rageMaria = parseInt(document.getElementById("rageMeterMaria").value);
+            const rageMatheus = parseInt(document.getElementById("rageMeterMatheus").value) || 0;
+            const rageMaria = parseInt(document.getElementById("rageMeterMaria").value) || 0;
             const leftColor = `rgb(${rageMatheus * 2.55}, 0, 0)`;
             const rightColor = `rgb(${rageMaria * 2.55}, 0, 0)`;
             document.getElementById("leftHalfHeart").setAttribute("fill", leftColor);
             document.getElementById("rightHalfHeart").setAttribute("fill", rightColor);
         }
 
-        setupRageMeter("Matheus");
-        setupRageMeter("Maria");
+        window.onload = function() {
+            setupRageMeter("Matheus");
+            setupRageMeter("Maria");
+            document.getElementById("dayCounter").textContent = `Dia: ${getDaysPassed()}`;
+        };
+
+        function getDaysPassed() {
+            const startDateKey = "startDate";
+            let startDate = localStorage.getItem(startDateKey);
+            const today = new Date().setHours(0, 0, 0, 0);
+
+            if (!startDate) {
+                localStorage.setItem(startDateKey, today);
+                startDate = today;
+            } else {
+                startDate = parseInt(startDate, 10);
+            }
+
+            return Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        }
     </script>
 </head>
-<body class="flex flex-row items-center justify-center h-screen bg-gray-900 text-white">
-    <div class="flex flex-row items-center justify-between w-full px-20">
-        <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center w-80">
+<body class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
+    <div class="flex flex-col md:flex-row items-center justify-between w-full max-w-4xl px-4">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center w-full md:w-80 mb-6 md:mb-0">
             <h2 class="text-xl font-bold mb-4">Medidor de Amor - Matheus</h2>
             <input type="range" id="rageMeterMatheus" min="0" max="100" class="w-full mb-4">
             <p id="rageValueMatheus" class="text-lg font-semibold">Nível: 50</p>
-            <button onclick="openWhatsApp('Matheus')" class="mt-4 px-4 py-2 bg-red-500 hover:bg-red-700 text-white font-bold rounded-lg">Precisamos Conversar</button>
         </div>
-        <div class="flex items-center justify-center relative">
+        <div class="flex flex-col items-center justify-center mx-6">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100" height="100">
                 <path id="leftHalfHeart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09V21.35z" fill="black" />
                 <path id="rightHalfHeart" d="M12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3c-1.74 0-3.41.81-4.5 2.09V21.35z" fill="black" />
             </svg>
+            <div class="bg-gray-800 p-4 rounded-lg shadow-xl text-center mt-4 w-full">
+                <h2 class="text-xl font-bold">Dias sem vc</h2>
+                <p id="dayCounter" class="text-lg font-semibold">Dia: 1</p>
+            </div>
         </div>
-        <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center w-80">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center w-full md:w-80">
             <h2 class="text-xl font-bold mb-4">Medidor de Amor - Maria</h2>
             <input type="range" id="rageMeterMaria" min="0" max="100" class="w-full mb-4">
             <p id="rageValueMaria" class="text-lg font-semibold">Nível: 50</p>
-            <button onclick="openWhatsApp('Maria')" class="mt-4 px-4 py-2 bg-red-500 hover:bg-red-700 text-white font-bold rounded-lg">Precisamos Conversar</button>
         </div>
     </div>
-
-    <script>
-        function openWhatsApp(user) {
-            const rageLevel = document.getElementById(`rageMeter${user}`).value;
-            const message = encodeURIComponent(`Precisamos conversar! Meu nível de amor está em ${rageLevel}.`);
-            window.open(`https://wa.me/554396825923?text=${message}`, "_blank");
-        }
-    </script>
 </body>
 </html>
