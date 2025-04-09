@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAFJqGkfr6-5DiDQ_OqVTWdufG87x8ctpA",
@@ -52,7 +52,6 @@
       document.getElementById("rightHalfHeart").setAttribute("fill", rightColor);
     }
 
-    // FORÇANDO o contador para "Dia: 6"
     function getDaysPassedFromFirebase() {
       document.getElementById("dayCounter").textContent = "Dia: 6";
     }
@@ -98,40 +97,54 @@
     };
   </script>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-  <div class="flex flex-col md:flex-row items-center justify-between w-full max-w-4xl px-4">
-    <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center w-full md:w-80 mb-6 md:mb-0">
-      <h2 class="text-xl font-bold mb-4">Medidor de Amor - Matheus</h2>
-      <input type="range" id="rageMeterMatheus" min="0" max="100" class="w-full mb-4">
-      <p id="rageValueMatheus" class="text-lg font-semibold">Nível: 50</p>
+<body class="flex flex-col items-center justify-start min-h-screen bg-gray-900 text-white p-4 space-y-6">
+
+  <div class="w-full max-w-md space-y-6">
+    <!-- Matheus -->
+    <div class="bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+      <h2 class="text-lg font-bold mb-2">Medidor de Amor - Matheus</h2>
+      <input type="range" id="rageMeterMatheus" min="0" max="100" class="w-full mb-2">
+      <p id="rageValueMatheus" class="text-base font-medium">Nível: 50</p>
     </div>
-    <div class="flex flex-col items-center justify-center mx-6">
+
+    <!-- Coração e Dias -->
+    <div class="flex flex-col items-center justify-center space-y-4">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100" height="100">
         <path id="leftHalfHeart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09V21.35z" fill="black" />
         <path id="rightHalfHeart" d="M12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3c-1.74 0-3.41.81-4.5 2.09V21.35z" fill="black" />
       </svg>
-      <div class="bg-gray-800 p-4 rounded-lg shadow-xl text-center mt-4 w-full">
-        <h2 class="text-xl font-bold">Dias sem vc</h2>
-        <p id="dayCounter" class="text-lg font-semibold">Dia: 6</p>
+      <div class="bg-gray-800 p-3 rounded-lg shadow-md w-full text-center">
+        <h2 class="text-lg font-bold">Dias sem vc</h2>
+        <p id="dayCounter" class="text-base font-medium">Dia: 6</p>
       </div>
     </div>
-    <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center w-full md:w-80">
-      <h2 class="text-xl font-bold mb-4">Medidor de Amor - Maria</h2>
-      <input type="range" id="rageMeterMaria" min="0" max="100" class="w-full mb-4">
-      <p id="rageValueMaria" class="text-lg font-semibold">Nível: 50</p>
+
+    <!-- Maria -->
+    <div class="bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+      <h2 class="text-lg font-bold mb-2">Medidor de Amor - Maria</h2>
+      <input type="range" id="rageMeterMaria" min="0" max="100" class="w-full mb-2">
+      <p id="rageValueMaria" class="text-base font-medium">Nível: 50</p>
+    </div>
+
+    <!-- Botão WhatsApp -->
+    <a href="https://wa.me/554396825923" target="_blank" class="block w-full text-center bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg shadow-md">
+      Vamos Conversar de Novo
+    </a>
+
+    <!-- TikTok -->
+    <div>
+      <p class="text-base font-semibold mb-1">TikTok Login</p>
+      <p id="tiktokUser" contenteditable="true" class="text-base border-b border-gray-600 mb-2 pb-1">usuário:_theuszink</p>
+      <p id="tiktokSenha" contenteditable="true" class="text-base border-b border-gray-600 pb-1">senha:Suetham2024!</p>
+    </div>
+
+    <!-- Instagram -->
+    <div class="mt-4">
+      <p class="text-base font-semibold mb-1">Instagram Login</p>
+      <p id="instaUser" contenteditable="true" class="text-base border-b border-gray-600 mb-2 pb-1">usuário:theusscirilo_</p>
+      <p id="instaSenha" contenteditable="true" class="text-base border-b border-gray-600 pb-1">senha:quando eu lembrar vai estar aqui</p>
     </div>
   </div>
 
-  <a href="https://wa.me/554396825923" target="_blank" class="mt-6 px-6 py-3 bg-green-500 text-white font-bold rounded-lg shadow-md hover:bg-green-600">
-    Vamos Conversar de Novo
-  </a>
-
-  <p class="mt-4 text-white text-lg font-semibold">Tik Tok Login</p>
-  <p id="tiktokUser" contenteditable="true" class="mt-1 text-white text-lg border-b border-gray-600 cursor-text">usuário:_theuszink</p>
-  <p id="tiktokSenha" contenteditable="true" class="mt-1 text-white text-lg border-b border-gray-600 cursor-text">senha:Suetham2024!</p>
-
-  <p class="mt-4 text-white text-lg font-semibold">Instagram Login</p>
-  <p id="instaUser" contenteditable="true" class="mt-1 text-white text-lg border-b border-gray-600 cursor-text">usuário:theusscirilo_</p>
-  <p id="instaSenha" contenteditable="true" class="mt-1 text-white text-lg border-b border-gray-600 cursor-text">senha:quando eu lembrar vai estar aqui</p>
 </body>
 </html>
