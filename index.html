@@ -7,14 +7,14 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAFJqGkfr6-5DiDQ_OqVTWdufG87x8ctpA",
       authDomain: "m0103-932ae.firebaseapp.com",
       databaseURL: "https://m0103-932ae-default-rtdb.firebaseio.com",
       projectId: "m0103-932ae",
-      storageBucket: "m0103-932ae.firebasestorage.app",
+      storageBucket: "m0103-932ae.appspot.com",
       messagingSenderId: "547718211112",
       appId: "1:547718211112:web:41a145abb757809fbcf71d",
       measurementId: "G-2KCFYN77MB"
@@ -52,19 +52,9 @@
       document.getElementById("rightHalfHeart").setAttribute("fill", rightColor);
     }
 
-    function getDaysPassed() {
-      const startDateKey = "startDate";
-      let startDate = localStorage.getItem(startDateKey);
-      const today = new Date().setHours(0, 0, 0, 0);
-
-      if (!startDate) {
-        localStorage.setItem(startDateKey, today);
-        startDate = today;
-      } else {
-        startDate = parseInt(startDate, 10);
-      }
-
-      return Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+    // FORÇANDO o contador para "Dia: 6"
+    function getDaysPassedFromFirebase() {
+      document.getElementById("dayCounter").textContent = "Dia: 6";
     }
 
     function startMusicAtTime() {
@@ -83,12 +73,10 @@
     function syncText(id, dbPath) {
       const element = document.getElementById(id);
 
-      // Salva no Firebase quando clicar fora do campo editado
       element.addEventListener("blur", () => {
         set(ref(database, dbPath), element.innerText.trim());
       });
 
-      // Atualiza em tempo real com Firebase
       onValue(ref(database, dbPath), (snapshot) => {
         const val = snapshot.val();
         if (val !== null && val !== element.innerText.trim()) {
@@ -100,10 +88,9 @@
     window.onload = function () {
       setupRageMeter("Matheus");
       setupRageMeter("Maria");
-      document.getElementById("dayCounter").textContent = `Dia: ${getDaysPassed()}`;
+      getDaysPassedFromFirebase();
       startMusicAtTime();
 
-      // Sincronizar os textos editáveis
       syncText("tiktokUser", "dados/tiktokUser");
       syncText("tiktokSenha", "dados/tiktokSenha");
       syncText("instaUser", "dados/instaUser");
@@ -125,7 +112,7 @@
       </svg>
       <div class="bg-gray-800 p-4 rounded-lg shadow-xl text-center mt-4 w-full">
         <h2 class="text-xl font-bold">Dias sem vc</h2>
-        <p id="dayCounter" class="text-lg font-semibold">Dia: 1</p>
+        <p id="dayCounter" class="text-lg font-semibold">Dia: 6</p>
       </div>
     </div>
     <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center w-full md:w-80">
