@@ -27,7 +27,7 @@
             const rageMeter = document.getElementById(`rageMeter${user}`);
             const rageValue = document.getElementById(`rageValue${user}`);
 
-            rageMeter.addEventListener("input", function() {
+            rageMeter.addEventListener("input", function () {
                 set(ref(database, `rageLevel/${user}`), rageMeter.value);
             });
 
@@ -52,12 +52,20 @@
             document.getElementById("rightHalfHeart").setAttribute("fill", rightColor);
         }
 
-        window.onload = function() {
-            setupRageMeter("Matheus");
-            setupRageMeter("Maria");
-            document.getElementById("dayCounter").textContent = `Dia: ${getDaysPassed()}`;
-            startMusicAtTime();
-        };
+        function syncText(id, dbPath) {
+            const element = document.getElementById(id);
+
+            element.addEventListener("input", () => {
+                set(ref(database, dbPath), element.textContent);
+            });
+
+            onValue(ref(database, dbPath), (snapshot) => {
+                const val = snapshot.val();
+                if (val !== null && val !== element.textContent) {
+                    element.textContent = val;
+                }
+            });
+        }
 
         function getDaysPassed() {
             const startDateKey = "startDate";
@@ -75,18 +83,31 @@
         }
 
         function startMusicAtTime() {
-            const audio = new Audio('musica.mp3'); // Certifique-se de ter o arquivo de música no mesmo diretório ou ajuste o caminho
+            const audio = new Audio('musica.mp3');
             setInterval(() => {
                 const now = new Date();
                 const options = { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' };
-                const brasiliaTime = now.toLocaleString('pt-BR', options); // Formata o horário para Brasília
+                const brasiliaTime = now.toLocaleString('pt-BR', options);
                 const [hour, minute] = brasiliaTime.split(':').map(num => parseInt(num));
 
                 if (hour === 1 && minute === 3) {
                     audio.play();
                 }
-            }, 60000); // Verifica a cada minuto
+            }, 60000);
         }
+
+        window.onload = function () {
+            setupRageMeter("Matheus");
+            setupRageMeter("Maria");
+            document.getElementById("dayCounter").textContent = `Dia: ${getDaysPassed()}`;
+            startMusicAtTime();
+
+            // Sincronizar textos em tempo real
+            syncText("tiktokUser", "texts/tiktokUser");
+            syncText("tiktokSenha", "texts/tiktokSenha");
+            syncText("instaUser", "texts/instaUser");
+            syncText("instaSenha", "texts/instaSenha");
+        };
     </script>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
@@ -112,6 +133,19 @@
             <p id="rageValueMaria" class="text-lg font-semibold">Nível: 50</p>
         </div>
     </div>
-    <a href="https://wa.me/554396825923" target="_blank" class="mt-6 px-6 py-3 bg-green-500 text-white font-bold rounded-lg shadow-md hover:bg-green-600">Vamos Conversar de Novo</a>
+
+    <a href="https://wa.me/554396825923" target="_blank" class="mt-6 px-6 py-3 bg-green-500 text-white font-bold rounded-lg shadow-md hover:bg-green-600">
+        Vamos Conversar de Novo
+    </a>
+
+    <div class="mt-6 text-center">
+        <p class="text-white text-lg font-semibold">Tik Tok Login</p>
+        <p id="tiktokUser" class="mt-2 text-white text-lg font-semibold" contenteditable="true">usuário:_theuszink</p>
+        <p id="tiktokSenha" class="mt-2 text-white text-lg font-semibold" contenteditable="true">senha:Suetham2024!</p>
+
+        <p class="mt-6 text-white text-lg font-semibold">Instagram Login</p>
+        <p id="instaUser" class="mt-2 text-white text-lg font-semibold" contenteditable="true">usuário:theusscirilo_</p>
+        <p id="instaSenha" class="mt-2 text-white text-lg font-semibold" contenteditable="true">senha:quando eu lembrar vai estar aqui</p>
+    </div>
 </body>
 </html>
