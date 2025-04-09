@@ -1,151 +1,150 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medidor de Amor</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Medidor de Amor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAFJqGkfr6-5DiDQ_OqVTWdufG87x8ctpA",
-            authDomain: "m0103-932ae.firebaseapp.com",
-            databaseURL: "https://m0103-932ae-default-rtdb.firebaseio.com",
-            projectId: "m0103-932ae",
-            storageBucket: "m0103-932ae.firebasestorage.app",
-            messagingSenderId: "547718211112",
-            appId: "1:547718211112:web:41a145abb757809fbcf71d",
-            measurementId: "G-2KCFYN77MB"
-        };
+    const firebaseConfig = {
+      apiKey: "AIzaSyAFJqGkfr6-5DiDQ_OqVTWdufG87x8ctpA",
+      authDomain: "m0103-932ae.firebaseapp.com",
+      databaseURL: "https://m0103-932ae-default-rtdb.firebaseio.com",
+      projectId: "m0103-932ae",
+      storageBucket: "m0103-932ae.firebasestorage.app",
+      messagingSenderId: "547718211112",
+      appId: "1:547718211112:web:41a145abb757809fbcf71d",
+      measurementId: "G-2KCFYN77MB"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
 
-        function setupRageMeter(user) {
-            const rageMeter = document.getElementById(`rageMeter${user}`);
-            const rageValue = document.getElementById(`rageValue${user}`);
+    function setupRageMeter(user) {
+      const rageMeter = document.getElementById(`rageMeter${user}`);
+      const rageValue = document.getElementById(`rageValue${user}`);
 
-            rageMeter.addEventListener("input", function () {
-                set(ref(database, `rageLevel/${user}`), rageMeter.value);
-            });
+      rageMeter.addEventListener("input", function () {
+        set(ref(database, `rageLevel/${user}`), rageMeter.value);
+      });
 
-            onValue(ref(database, `rageLevel/${user}`), (snapshot) => {
-                let value = snapshot.val();
-                if (value === null || value === undefined) {
-                    value = 50;
-                    set(ref(database, `rageLevel/${user}`), value);
-                }
-                rageMeter.value = value;
-                rageValue.textContent = `Nível: ${value}`;
-                updateHeart();
-            });
+      onValue(ref(database, `rageLevel/${user}`), (snapshot) => {
+        let value = snapshot.val();
+        if (value === null || value === undefined) {
+          value = 50;
+          set(ref(database, `rageLevel/${user}`), value);
         }
+        rageMeter.value = value;
+        rageValue.textContent = `Nível: ${value}`;
+        updateHeart();
+      });
+    }
 
-        function updateHeart() {
-            const rageMatheus = parseInt(document.getElementById("rageMeterMatheus").value) || 0;
-            const rageMaria = parseInt(document.getElementById("rageMeterMaria").value) || 0;
-            const leftColor = `rgb(${rageMatheus * 2.55}, 0, 0)`;
-            const rightColor = `rgb(${rageMaria * 2.55}, 0, 0)`;
-            document.getElementById("leftHalfHeart").setAttribute("fill", leftColor);
-            document.getElementById("rightHalfHeart").setAttribute("fill", rightColor);
+    function updateHeart() {
+      const rageMatheus = parseInt(document.getElementById("rageMeterMatheus").value) || 0;
+      const rageMaria = parseInt(document.getElementById("rageMeterMaria").value) || 0;
+      const leftColor = `rgb(${rageMatheus * 2.55}, 0, 0)`;
+      const rightColor = `rgb(${rageMaria * 2.55}, 0, 0)`;
+      document.getElementById("leftHalfHeart").setAttribute("fill", leftColor);
+      document.getElementById("rightHalfHeart").setAttribute("fill", rightColor);
+    }
+
+    function getDaysPassed() {
+      const startDateKey = "startDate";
+      let startDate = localStorage.getItem(startDateKey);
+      const today = new Date().setHours(0, 0, 0, 0);
+
+      if (!startDate) {
+        localStorage.setItem(startDateKey, today);
+        startDate = today;
+      } else {
+        startDate = parseInt(startDate, 10);
+      }
+
+      return Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+    }
+
+    function startMusicAtTime() {
+      const audio = new Audio('musica.mp3');
+      setInterval(() => {
+        const now = new Date();
+        const options = { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' };
+        const brasiliaTime = now.toLocaleString('pt-BR', options);
+        const [hour, minute] = brasiliaTime.split(':').map(num => parseInt(num));
+        if (hour === 1 && minute === 3) {
+          audio.play();
         }
+      }, 60000);
+    }
 
-        function syncText(id, dbPath) {
-            const element = document.getElementById(id);
+    function syncText(id, dbPath) {
+      const element = document.getElementById(id);
 
-            element.addEventListener("input", () => {
-                set(ref(database, dbPath), element.textContent);
-            });
+      // Salva no Firebase quando clicar fora do campo editado
+      element.addEventListener("blur", () => {
+        set(ref(database, dbPath), element.innerText.trim());
+      });
 
-            onValue(ref(database, dbPath), (snapshot) => {
-                const val = snapshot.val();
-                if (val !== null && val !== element.textContent) {
-                    element.textContent = val;
-                }
-            });
+      // Atualiza em tempo real com Firebase
+      onValue(ref(database, dbPath), (snapshot) => {
+        const val = snapshot.val();
+        if (val !== null && val !== element.innerText.trim()) {
+          element.innerText = val;
         }
+      });
+    }
 
-        function getDaysPassed() {
-            const startDateKey = "startDate";
-            let startDate = localStorage.getItem(startDateKey);
-            const today = new Date().setHours(0, 0, 0, 0);
+    window.onload = function () {
+      setupRageMeter("Matheus");
+      setupRageMeter("Maria");
+      document.getElementById("dayCounter").textContent = `Dia: ${getDaysPassed()}`;
+      startMusicAtTime();
 
-            if (!startDate) {
-                localStorage.setItem(startDateKey, today);
-                startDate = today;
-            } else {
-                startDate = parseInt(startDate, 10);
-            }
-
-            return Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
-        }
-
-        function startMusicAtTime() {
-            const audio = new Audio('musica.mp3');
-            setInterval(() => {
-                const now = new Date();
-                const options = { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' };
-                const brasiliaTime = now.toLocaleString('pt-BR', options);
-                const [hour, minute] = brasiliaTime.split(':').map(num => parseInt(num));
-
-                if (hour === 1 && minute === 3) {
-                    audio.play();
-                }
-            }, 60000);
-        }
-
-        window.onload = function () {
-            setupRageMeter("Matheus");
-            setupRageMeter("Maria");
-            document.getElementById("dayCounter").textContent = `Dia: ${getDaysPassed()}`;
-            startMusicAtTime();
-
-            // Sincronizar textos em tempo real
-            syncText("tiktokUser", "texts/tiktokUser");
-            syncText("tiktokSenha", "texts/tiktokSenha");
-            syncText("instaUser", "texts/instaUser");
-            syncText("instaSenha", "texts/instaSenha");
-        };
-    </script>
+      // Sincronizar os textos editáveis
+      syncText("tiktokUser", "dados/tiktokUser");
+      syncText("tiktokSenha", "dados/tiktokSenha");
+      syncText("instaUser", "dados/instaUser");
+      syncText("instaSenha", "dados/instaSenha");
+    };
+  </script>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-    <div class="flex flex-col md:flex-row items-center justify-between w-full max-w-4xl px-4">
-        <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center w-full md:w-80 mb-6 md:mb-0">
-            <h2 class="text-xl font-bold mb-4">Medidor de Amor - Matheus</h2>
-            <input type="range" id="rageMeterMatheus" min="0" max="100" class="w-full mb-4">
-            <p id="rageValueMatheus" class="text-lg font-semibold">Nível: 50</p>
-        </div>
-        <div class="flex flex-col items-center justify-center mx-6">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100" height="100">
-                <path id="leftHalfHeart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09V21.35z" fill="black" />
-                <path id="rightHalfHeart" d="M12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3c-1.74 0-3.41.81-4.5 2.09V21.35z" fill="black" />
-            </svg>
-            <div class="bg-gray-800 p-4 rounded-lg shadow-xl text-center mt-4 w-full">
-                <h2 class="text-xl font-bold">Dias sem vc</h2>
-                <p id="dayCounter" class="text-lg font-semibold">Dia: 1</p>
-            </div>
-        </div>
-        <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center w-full md:w-80">
-            <h2 class="text-xl font-bold mb-4">Medidor de Amor - Maria</h2>
-            <input type="range" id="rageMeterMaria" min="0" max="100" class="w-full mb-4">
-            <p id="rageValueMaria" class="text-lg font-semibold">Nível: 50</p>
-        </div>
+  <div class="flex flex-col md:flex-row items-center justify-between w-full max-w-4xl px-4">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center w-full md:w-80 mb-6 md:mb-0">
+      <h2 class="text-xl font-bold mb-4">Medidor de Amor - Matheus</h2>
+      <input type="range" id="rageMeterMatheus" min="0" max="100" class="w-full mb-4">
+      <p id="rageValueMatheus" class="text-lg font-semibold">Nível: 50</p>
     </div>
-
-    <a href="https://wa.me/554396825923" target="_blank" class="mt-6 px-6 py-3 bg-green-500 text-white font-bold rounded-lg shadow-md hover:bg-green-600">
-        Vamos Conversar de Novo
-    </a>
-
-    <div class="mt-6 text-center">
-        <p class="text-white text-lg font-semibold">Tik Tok Login</p>
-        <p id="tiktokUser" class="mt-2 text-white text-lg font-semibold" contenteditable="true">usuário:_theuszink</p>
-        <p id="tiktokSenha" class="mt-2 text-white text-lg font-semibold" contenteditable="true">senha:Suetham2024!</p>
-
-        <p class="mt-6 text-white text-lg font-semibold">Instagram Login</p>
-        <p id="instaUser" class="mt-2 text-white text-lg font-semibold" contenteditable="true">usuário:theusscirilo_</p>
-        <p id="instaSenha" class="mt-2 text-white text-lg font-semibold" contenteditable="true">senha:quando eu lembrar vai estar aqui</p>
+    <div class="flex flex-col items-center justify-center mx-6">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100" height="100">
+        <path id="leftHalfHeart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09V21.35z" fill="black" />
+        <path id="rightHalfHeart" d="M12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3c-1.74 0-3.41.81-4.5 2.09V21.35z" fill="black" />
+      </svg>
+      <div class="bg-gray-800 p-4 rounded-lg shadow-xl text-center mt-4 w-full">
+        <h2 class="text-xl font-bold">Dias sem vc</h2>
+        <p id="dayCounter" class="text-lg font-semibold">Dia: 1</p>
+      </div>
     </div>
+    <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center w-full md:w-80">
+      <h2 class="text-xl font-bold mb-4">Medidor de Amor - Maria</h2>
+      <input type="range" id="rageMeterMaria" min="0" max="100" class="w-full mb-4">
+      <p id="rageValueMaria" class="text-lg font-semibold">Nível: 50</p>
+    </div>
+  </div>
+
+  <a href="https://wa.me/554396825923" target="_blank" class="mt-6 px-6 py-3 bg-green-500 text-white font-bold rounded-lg shadow-md hover:bg-green-600">
+    Vamos Conversar de Novo
+  </a>
+
+  <p class="mt-4 text-white text-lg font-semibold">Tik Tok Login</p>
+  <p id="tiktokUser" contenteditable="true" class="mt-1 text-white text-lg border-b border-gray-600 cursor-text">usuário:_theuszink</p>
+  <p id="tiktokSenha" contenteditable="true" class="mt-1 text-white text-lg border-b border-gray-600 cursor-text">senha:Suetham2024!</p>
+
+  <p class="mt-4 text-white text-lg font-semibold">Instagram Login</p>
+  <p id="instaUser" contenteditable="true" class="mt-1 text-white text-lg border-b border-gray-600 cursor-text">usuário:theusscirilo_</p>
+  <p id="instaSenha" contenteditable="true" class="mt-1 text-white text-lg border-b border-gray-600 cursor-text">senha:quando eu lembrar vai estar aqui</p>
 </body>
 </html>
